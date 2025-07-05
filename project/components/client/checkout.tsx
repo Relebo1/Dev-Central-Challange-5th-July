@@ -54,13 +54,13 @@ const paymentMethods = [
     id: "mpesa",
     name: "M-Pesa",
     icon: Smartphone,
-    description: "Mobile Money (Kenya)",
+    description: "Mobile Money (Lesotho)",
   },
   {
     id: "ecocash",
     name: "EcoCash",
     icon: Smartphone,
-    description: "Mobile Money (Zimbabwe)",
+    description: "Mobile Money (Lesotho)",
   },
 
   { id: "skrill", name: "Skrill", icon: Wallet, description: "Digital Wallet" },

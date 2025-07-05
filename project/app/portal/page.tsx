@@ -266,7 +266,7 @@ export default function PortalPage() {
                       />
                       <div className="flex-1">
                         <h3 className="font-medium">{item.name}</h3>
-                        <p className="text-gray-600">${item.price}</p>
+                        <p className="text-gray-600">LSL {item.price}</p>
                         <div className="flex items-center space-x-2 mt-2">
                           <Button
                             size="sm"
@@ -298,7 +298,7 @@ export default function PortalPage() {
                   
                   <div className="border-t pt-4">
                     <div className="flex justify-between font-bold text-lg mb-4">
-                      <span>Total: ${getTotalPrice().toFixed(2)}</span>
+                      <span>Total: LSL {getTotalPrice().toFixed(2)}</span>
                     </div>
                     <Button 
                       className="w-full bg-green-600 hover:bg-green-700"
