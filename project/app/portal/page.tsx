@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Search, ShoppingCart, Star, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Search, ShoppingCart, Star, MessageCircle, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { ChatWidget } from '@/components/client/chat-widget';
 import { ProductCard } from '@/components/client/product-card';
+import { Checkout } from '@/components/client/checkout';
 
 interface Product {
   id: number;
@@ -19,6 +20,10 @@ interface Product {
   rating: number;
   description: string;
   inStock: boolean;
+}
+
+interface CartItem extends Product {
+  quantity: number;
 }
 
 const sampleProducts: Product[] = [
@@ -88,7 +93,11 @@ export default function PortalPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [cart, setCart] = useState<number[]>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [showCart, setShowCart] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [orderComplete, setOrderComplete] = useState(false);
+  const [orderId, setOrderId] = useState('');
 
   useEffect(() => {
     // Simulate API call
@@ -104,8 +113,89 @@ export default function PortalPage() {
   });
 
   const addToCart = (productId: number) => {
-    setCart(prev => [...prev, productId]);
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+
+    setCart(prev => {
+      const existingItem = prev.find(item => item.id === productId);
+      if (existingItem) {
+        return prev.map(item =>
+          item.id === productId
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      } else {
+        return [...prev, { ...product, quantity: 1 }];
+      }
+    });
   };
+
+  const removeFromCart = (productId: number) => {
+    setCart(prev => prev.filter(item => item.id !== productId));
+  };
+
+  const updateQuantity = (productId: number, quantity: number) => {
+    if (quantity <= 0) {
+      removeFromCart(productId);
+      return;
+    }
+    
+    setCart(prev =>
+      prev.map(item =>
+        item.id === productId ? { ...item, quantity } : item
+      )
+    );
+  };
+
+  const getTotalItems = () => cart.reduce((sum, item) => sum + item.quantity, 0);
+  const getTotalPrice = () => cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+  const handleOrderComplete = (newOrderId: string) => {
+    setOrderId(newOrderId);
+    setOrderComplete(true);
+    setCart([]);
+    setShowCheckout(false);
+  };
+
+  if (orderComplete) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md text-center">
+          <CardContent className="p-8">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="w-8 h-8 text-green-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Order Confirmed!</h2>
+            <p className="text-gray-600 mb-4">
+              Thank you for your purchase. Your order has been successfully placed.
+            </p>
+            <div className="bg-gray-50 p-4 rounded-lg mb-6">
+              <p className="text-sm text-gray-600">Order ID</p>
+              <p className="font-mono font-bold text-lg">{orderId}</p>
+            </div>
+            <div className="space-y-3">
+              <Button onClick={() => setOrderComplete(false)} className="w-full">
+                Continue Shopping
+              </Button>
+              <Button variant="outline" className="w-full">
+                Track Order
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (showCheckout) {
+    return (
+      <Checkout
+        cartItems={cart}
+        onBack={() => setShowCheckout(false)}
+        onOrderComplete={handleOrderComplete}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -121,9 +211,19 @@ export default function PortalPage() {
               <h1 className="text-2xl font-bold text-gray-900">Product Portal</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <Button variant="outline" size="sm" className="relative">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="relative"
+                onClick={() => setShowCart(!showCart)}
+              >
                 <ShoppingCart className="w-4 h-4 mr-2" />
-                Cart ({cart.length})
+                Cart ({getTotalItems()})
+                {getTotalItems() > 0 && (
+                  <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs">
+                    {getTotalItems()}
+                  </Badge>
+                )}
               </Button>
               <Button variant="outline" size="sm">
                 <MessageCircle className="w-4 h-4 mr-2" />
@@ -136,6 +236,86 @@ export default function PortalPage() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
+        {/* Cart Sidebar */}
+        {showCart && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50" onClick={() => setShowCart(false)}>
+            <div 
+              className="fixed right-0 top-0 h-full w-96 bg-white shadow-xl p-6 overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold">Shopping Cart</h2>
+                <Button variant="outline" size="sm" onClick={() => setShowCart(false)}>
+                  ×
+                </Button>
+              </div>
+              
+              {cart.length === 0 ? (
+                <div className="text-center py-8">
+                  <ShoppingCart className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-600">Your cart is empty</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {cart.map((item) => (
+                    <div key={item.id} className="flex items-center space-x-4 p-4 border rounded-lg">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-16 h-16 object-cover rounded-lg"
+                      />
+                      <div className="flex-1">
+                        <h3 className="font-medium">{item.name}</h3>
+                        <p className="text-gray-600">${item.price}</p>
+                        <div className="flex items-center space-x-2 mt-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          >
+                            -
+                          </Button>
+                          <span className="w-8 text-center">{item.quantity}</span>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          >
+                            +
+                          </Button>
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => removeFromCart(item.id)}
+                        className="text-red-600"
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  ))}
+                  
+                  <div className="border-t pt-4">
+                    <div className="flex justify-between font-bold text-lg mb-4">
+                      <span>Total: ${getTotalPrice().toFixed(2)}</span>
+                    </div>
+                    <Button 
+                      className="w-full bg-green-600 hover:bg-green-700"
+                      onClick={() => {
+                        setShowCart(false);
+                        setShowCheckout(true);
+                      }}
+                    >
+                      Proceed to Checkout
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Search and Filters */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row gap-4 mb-6">

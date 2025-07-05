@@ -13,13 +13,17 @@ import {
   TrendingUp,
   Package,
   Activity,
-  AlertCircle
+  AlertCircle,
+  Calculator,
+  UserPlus
 } from 'lucide-react';
 import Link from 'next/link';
 import { OrderManagement } from '@/components/admin/order-management';
 import { ChatMonitoring } from '@/components/admin/chat-monitoring';
 import { InventoryTracking } from '@/components/admin/inventory-tracking';
 import { AIReports } from '@/components/admin/ai-reports';
+import { AIFinancial } from '@/components/admin/ai-financial';
+import { StaffManagement } from '@/components/admin/staff-management';
 
 interface DashboardStats {
   totalOrders: number;
@@ -28,6 +32,8 @@ interface DashboardStats {
   activeChats: number;
   lowStock: number;
   ordersTrend: number;
+  monthlyProfit: number;
+  cashFlow: number;
 }
 
 export default function AdminDashboard() {
@@ -37,7 +43,9 @@ export default function AdminDashboard() {
     totalRevenue: 0,
     activeChats: 0,
     lowStock: 0,
-    ordersTrend: 0
+    ordersTrend: 0,
+    monthlyProfit: 0,
+    cashFlow: 0
   });
 
   useEffect(() => {
@@ -50,7 +58,9 @@ export default function AdminDashboard() {
         totalRevenue: 45678.90,
         activeChats: 12,
         lowStock: 5,
-        ordersTrend: 12.5
+        ordersTrend: 12.5,
+        monthlyProfit: 10567.45,
+        cashFlow: 8234.12
       });
     };
 
@@ -81,6 +91,14 @@ export default function AdminDashboard() {
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
       trend: '+15.3%'
+    },
+    {
+      title: 'Monthly Profit',
+      value: `LSL ${stats.monthlyProfit.toLocaleString()}`,
+      icon: Calculator,
+      color: 'text-emerald-600',
+      bgColor: 'bg-emerald-50',
+      trend: '+18.7%'
     },
     {
       title: 'Active Chats',
@@ -127,7 +145,7 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
           {statCards.map((stat, index) => (
             <Card key={index} className="hover:shadow-md transition-shadow">
               <CardContent className="p-6">
@@ -148,11 +166,13 @@ export default function AdminDashboard() {
 
         {/* Dashboard Tabs */}
         <Tabs defaultValue="orders" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="chats">Chat Monitoring</TabsTrigger>
             <TabsTrigger value="inventory">Inventory</TabsTrigger>
+            <TabsTrigger value="financial">AI Financial</TabsTrigger>
             <TabsTrigger value="reports">AI Reports</TabsTrigger>
+            <TabsTrigger value="staff">Staff Management</TabsTrigger>
           </TabsList>
 
           <TabsContent value="orders">
@@ -167,8 +187,16 @@ export default function AdminDashboard() {
             <InventoryTracking />
           </TabsContent>
 
+          <TabsContent value="financial">
+            <AIFinancial />
+          </TabsContent>
+
           <TabsContent value="reports">
             <AIReports />
+          </TabsContent>
+
+          <TabsContent value="staff">
+            <StaffManagement />
           </TabsContent>
         </Tabs>
       </main>

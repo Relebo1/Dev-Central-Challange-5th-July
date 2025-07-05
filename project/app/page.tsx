@@ -148,7 +148,7 @@ export default function HomePage() {
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
             <p>&copy; 2024 Phetoho. All rights reserved. </p><br></br>
-            <p> Develoved  By Relebohile Sekutlu & Thebe Nkhasi</p>
+            <p> Developed  By Relebohile Sekutlu & Thebe Nkhasi</p>
           </div>
         </div>
       </footer>
