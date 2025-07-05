@@ -50,7 +50,7 @@ const sampleStaff: StaffMember[] = [
     id: '2',
     name: 'Thabang Mokoatle',
     email: 'thabang.mokoatle@phetoho.com',
-    phone: '+1 (555) 234-5678',
+    phone: '+266 5667 7882',
     role: 'manager',
     status: 'active',
     joinDate: '2024-02-01',
@@ -75,7 +75,7 @@ const sampleStaff: StaffMember[] = [
     phone: '+266 57428772',
     role: 'staff',
     status: 'pending',
-    joinDate: '2024-03-01',
+    joinDate: '2025-07-01',
     lastLogin: 'Never',
     permissions: ['inventory']
   }

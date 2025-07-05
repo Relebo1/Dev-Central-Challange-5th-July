@@ -20,7 +20,7 @@ interface ChatSession {
 const sampleChats: ChatSession[] = [
   {
     id: 'CHAT-001',
-    customer: 'John Doe',
+    customer: 'Thabang Monne',
     status: 'active',
     lastMessage: 'Can you help me track my order?',
     timestamp: '2 min ago',
@@ -29,7 +29,7 @@ const sampleChats: ChatSession[] = [
   },
   {
     id: 'CHAT-002',
-    customer: 'Jane Smith',
+    customer: 'Kananelo Joel',
     status: 'waiting',
     lastMessage: 'I need to return an item',
     timestamp: '15 min ago',
@@ -38,7 +38,7 @@ const sampleChats: ChatSession[] = [
   },
   {
     id: 'CHAT-003',
-    customer: 'Bob Johnson',
+    customer: 'Relebohile Sekutlu',
     status: 'resolved',
     lastMessage: 'Thank you for your help!',
     timestamp: '1 hour ago',

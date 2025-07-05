@@ -25,7 +25,7 @@ export default function HomePage() {
                 Admin
               </Link>
               <Button asChild>
-                <Link href="/portal">Get Started</Link>
+                <Link href="/auth/login">Get Started</Link>
               </Button>
             </nav>
           </div>
